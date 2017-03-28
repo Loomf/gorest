@@ -1,10 +1,10 @@
 package gorest
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"bytes"
 	"io"
 )
 
@@ -30,7 +30,12 @@ type Response http.Response
 
 // This will decode the return JSON into whatever you provide as a container
 func (this *Response) Decode(target interface{}) (error) {
-	return json.NewDecoder(this.Body).Decode(target)
+	err := json.NewDecoder(this.Body).Decode(target)
+	err2 := this.Body.Close()
+	if(err == nil) {
+		return err2
+	}
+	return err
 }
 
 func New(api_url string, extra_headers map[string]string) *Client {
